@@ -41,18 +41,18 @@ const HomePage = () => {
   const features = [
     {
       icon: Shield,
-      title: 'Buyer Protection',
-      description: 'Shop with confidence with our buyer protection program',
+      title: t('home.buyerProtection'),
+      description: t('home.buyerProtectionDesc'),
     },
     {
       icon: Truck,
-      title: 'Fast Delivery',
-      description: 'Quick delivery across all Emirates with tracking',
+      title: t('home.fastDelivery'),
+      description: t('home.fastDeliveryDesc'),
     },
     {
       icon: Heart,
-      title: 'Sustainable Fashion',
-      description: 'Give pre-loved items a second life and help the environment',
+      title: t('home.sustainableFashion'),
+      description: t('home.sustainableFashionDesc'),
     },
   ]
 
@@ -65,31 +65,30 @@ const HomePage = () => {
             <div className="flex items-center justify-center mb-6">
               <Sparkles className="w-8 h-8 text-primary mr-2" />
               <Badge variant="secondary" className="text-sm px-3 py-1">
-                New in UAE
+                {t('home.newInUAE')}
               </Badge>
             </div>
             
             <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-              Buy & Sell
-              <span className="text-primary block">Pre-Loved Fashion</span>
-              in the UAE
+              {t('home.heroTitle1')}
+              <span className="text-primary block">{t('home.heroTitle2')}</span>
+              {t('home.heroTitle3')}
             </h1>
             
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Discover unique fashion pieces from Dubai, Abu Dhabi, and across the Emirates. 
-              Join the sustainable fashion movement today.
+              {t('home.heroDescription')}
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" asChild className="btn-primary">
                 <Link to="/items">
-                  Start Shopping
+                  {t('home.startShopping')}
                   <ArrowRight className={`w-4 h-4 ${isRTL ? 'mr-2' : 'ml-2'}`} />
                 </Link>
               </Button>
               <Button size="lg" variant="outline" asChild className="btn-outline">
                 <Link to="/sell">
-                  Start Selling
+                  {t('home.startSelling')}
                 </Link>
               </Button>
             </div>
@@ -126,10 +125,10 @@ const HomePage = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-foreground mb-4">
-              Shop by Category
+              {t('home.shopByCategory')}
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Find exactly what you're looking for in our curated categories
+              {t('home.shopByCategoryDesc')}
             </p>
           </div>
           
@@ -172,12 +171,12 @@ const HomePage = () => {
                 {t('items.featured')}
               </h2>
               <p className="text-muted-foreground">
-                Handpicked items from our community
+                {t('home.featuredItemsDesc')}
               </p>
             </div>
             <Button variant="outline" asChild>
               <Link to="/items">
-                View All
+                {t('home.viewAll')}
                 <ArrowRight className={`w-4 h-4 ${isRTL ? 'mr-2' : 'ml-2'}`} />
               </Link>
             </Button>
@@ -247,21 +246,20 @@ const HomePage = () => {
       <section className="py-20 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to Start Your Fashion Journey?
+            {t('home.readyToStart')}
           </h2>
           <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-            Join thousands of fashion lovers in the UAE who are buying and selling 
-            pre-loved items every day.
+            {t('home.readyToStartDesc')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" variant="secondary">
               <Link to="/register">
-                Join VintedUAE Today
+                {t('home.joinToday')}
               </Link>
             </Button>
             <Button size="lg" variant="outline" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
               <Link to="/items">
-                Browse Items
+                {t('home.browseItems')}
               </Link>
             </Button>
           </div>
