@@ -143,8 +143,8 @@ export const ThemeProvider = ({ children }) => {
         
         // Home Page
         'home.newInUAE': 'New in UAE',
-        'home.heroTitle1': 'Buy & Sell',
-        'home.heroTitle2': 'Pre-Loved Fashion',
+        'home.heroTitle1': 'TESTING',
+        'home.heroTitle2': 'DEPLOYMENT',
         'home.heroTitle3': 'in the UAE',
         'home.heroDescription': 'Discover unique fashion and join the sustainable fashion movement today.',
         'home.startShopping': 'Start Shopping',
