@@ -29,14 +29,40 @@ const ItemsPage = () => {
   const fetchItems = async () => {
     setLoading(true)
     try {
-      const params = new URLSearchParams(searchParams)
-      const result = await apiCall(`/items?${params.toString()}`)
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 500))
       
-      if (result.success) {
-        setItems(result.data.items || [])
+      // Import sample data
+      const { sampleItems } = await import('../../data/sampleItems')
+      
+      // Filter items based on search params
+      let filteredItems = sampleItems
+      
+      if (currentQuery) {
+        filteredItems = filteredItems.filter(item => 
+          item.title.toLowerCase().includes(currentQuery.toLowerCase()) ||
+          item.description.toLowerCase().includes(currentQuery.toLowerCase()) ||
+          item.brand.toLowerCase().includes(currentQuery.toLowerCase())
+        )
       }
+      
+      if (currentCategory) {
+        filteredItems = filteredItems.filter(item => item.category === currentCategory)
+      }
+      
+      // Sort items
+      if (currentSort === 'price_asc') {
+        filteredItems.sort((a, b) => a.price - b.price)
+      } else if (currentSort === 'price_desc') {
+        filteredItems.sort((a, b) => b.price - a.price)
+      } else if (currentSort === 'created_at') {
+        filteredItems.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      }
+      
+      setItems(filteredItems)
     } catch (error) {
       console.error('Error fetching items:', error)
+      setItems([])
     } finally {
       setLoading(false)
     }
