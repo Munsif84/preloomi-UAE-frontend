@@ -11,7 +11,7 @@ import MobileNavigation from './components/layout/MobileNavigation'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/auth/LoginPage'
 import RegisterPage from './pages/auth/RegisterPage'
-import ItemsPage from './pages/items/ItemsPage'
+import ItemsPageSimple from './pages/items/ItemsPageSimple'
 import ItemDetailPage from './pages/items/ItemDetailPage'
 import CreateItemPage from './pages/items/CreateItemPage'
 import ProfilePage from './pages/profile/ProfilePage'
@@ -48,7 +48,7 @@ function App() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
-                <Route path="/items" element={<ItemsPage />} />
+                <Route path="/items" element={<ItemsPageSimple />} />
                 <Route path="/items/:id" element={<ItemDetailPage />} />
                 <Route path="/sell" element={<CreateItemPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
