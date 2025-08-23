@@ -1,95 +1,95 @@
 import { Link, useLocation } from 'react-router-dom'
-import { Home, Search, Plus, MessageCircle, User } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
+import { Home, Search, Plus, Mail, User } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTheme } from '@/contexts/ThemeContext'
 
 const MobileNavigation = () => {
   const location = useLocation()
   const { isAuthenticated } = useAuth()
-  const { t } = useTheme()
-
-  const isActive = (path) => {
-    if (path === '/' && location.pathname === '/') return true
-    if (path !== '/' && location.pathname.startsWith(path)) return true
-    return false
-  }
+  const { t, isRTL } = useTheme()
 
   const navItems = [
     {
-      path: '/',
+      id: 'home',
       icon: Home,
-      label: t('nav.home'),
-      requireAuth: false,
+      label: isRTL ? 'الرئيسية' : 'Home',
+      path: '/',
     },
     {
-      path: '/items',
+      id: 'search',
       icon: Search,
-      label: t('nav.browse'),
-      requireAuth: false,
+      label: isRTL ? 'بحث' : 'Search',
+      path: '/items',
     },
     {
-      path: '/sell',
+      id: 'sell',
       icon: Plus,
-      label: t('nav.sell'),
-      requireAuth: true,
+      label: isRTL ? 'بيع' : 'Sell',
+      path: '/sell',
     },
     {
+      id: 'inbox',
+      icon: Mail,
+      label: isRTL ? 'الرسائل' : 'Inbox',
       path: '/messages',
-      icon: MessageCircle,
-      label: t('nav.messages'),
+      badge: 0, // Can be dynamic
       requireAuth: true,
-      badge: 0, // This would come from context/state
     },
     {
-      path: isAuthenticated ? '/profile' : '/login',
+      id: 'profile',
       icon: User,
-      label: isAuthenticated ? t('nav.profile') : t('nav.login'),
-      requireAuth: false,
+      label: isRTL ? 'الملف الشخصي' : 'Profile',
+      path: isAuthenticated ? '/profile' : '/login',
     },
   ]
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border safe-bottom z-40">
-      <div className="flex items-center justify-around h-16 px-2">
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-gray-900 border-t border-gray-800">
+      <div className="flex items-center justify-around py-2">
         {navItems.map((item) => {
-          const Icon = item.icon
-          const active = isActive(item.path)
-          
           // Don't show auth-required items if not authenticated
-          if (item.requireAuth && !isAuthenticated && item.path !== '/login') {
+          if (item.requireAuth && !isAuthenticated) {
             return null
           }
 
+          const Icon = item.icon
+          const isActive = location.pathname === item.path
+          
           return (
             <Link
-              key={item.path}
+              key={item.id}
               to={item.path}
-              className={`flex flex-col items-center justify-center min-w-0 flex-1 py-2 px-1 transition-colors ${
-                active
-                  ? 'text-primary'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
+              className="flex flex-col items-center justify-center py-2 px-3 min-w-0 flex-1"
             >
               <div className="relative">
-                <Icon className="w-5 h-5" />
-                {item.badge && item.badge > 0 && (
-                  <Badge
-                    variant="destructive"
-                    className="absolute -top-2 -right-2 w-4 h-4 p-0 flex items-center justify-center text-xs"
-                  >
+                <Icon 
+                  className={`w-6 h-6 mb-1 ${
+                    isActive 
+                      ? 'text-teal-400' 
+                      : 'text-gray-400'
+                  }`} 
+                />
+                {/* Badge for notifications */}
+                {item.badge > 0 && (
+                  <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
                     {item.badge > 99 ? '99+' : item.badge}
-                  </Badge>
+                  </div>
                 )}
               </div>
-              <span className="text-xs mt-1 truncate max-w-full">
+              <span 
+                className={`text-xs ${
+                  isActive 
+                    ? 'text-teal-400 font-medium' 
+                    : 'text-gray-400'
+                }`}
+              >
                 {item.label}
               </span>
             </Link>
           )
         })}
       </div>
-    </nav>
+    </div>
   )
 }
 

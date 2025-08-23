@@ -1,270 +1,159 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Sparkles, Shield, Truck, Heart } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { useAuth } from '@/contexts/AuthContext'
+import { Heart, Search } from 'lucide-react'
 import { useTheme } from '@/contexts/ThemeContext'
+import { sampleItems } from '@/data/sampleItems'
 
 const HomePage = () => {
-  const [featuredItems, setFeaturedItems] = useState([])
-  const [categories, setCategories] = useState([])
-  const [loading, setLoading] = useState(true)
-  const { apiCall } = useAuth()
   const { t, isRTL } = useTheme()
+  const [selectedCategory, setSelectedCategory] = useState('All')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [recommendedItems, setRecommendedItems] = useState([])
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch featured items
-        const featuredResult = await apiCall('/items/featured?limit=8')
-        if (featuredResult.success) {
-          setFeaturedItems(featuredResult.data)
-        }
-
-        // Fetch categories
-        const categoriesResult = await apiCall('/categories')
-        if (categoriesResult.success) {
-          setCategories(categoriesResult.data)
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchData()
-  }, [apiCall])
-
-  const features = [
-    {
-      icon: Shield,
-      title: t('home.buyerProtection'),
-      description: t('home.buyerProtectionDesc'),
-    },
-    {
-      icon: Truck,
-      title: t('home.fastDelivery'),
-      description: t('home.fastDeliveryDesc'),
-    },
-    {
-      icon: Heart,
-      title: t('home.sustainableFashion'),
-      description: t('home.sustainableFashionDesc'),
-    },
+  const categories = [
+    { id: 'All', name: 'All', nameAr: 'الكل' },
+    { id: 'Women', name: 'Women', nameAr: 'نساء' },
+    { id: 'Men', name: 'Men', nameAr: 'رجال' },
+    { id: 'Kids', name: 'Kids', nameAr: 'أطفال' },
+    { id: 'Home', name: 'Home', nameAr: 'منزل' },
+    { id: 'Electronics', name: 'Electronics', nameAr: 'إلكترونيات' },
+    { id: 'Sports', name: 'Sports', nameAr: 'رياضة' }
   ]
 
+  useEffect(() => {
+    // Filter items based on selected category
+    let filtered = sampleItems
+    if (selectedCategory !== 'All') {
+      filtered = sampleItems.filter(item => item.category === selectedCategory)
+    }
+    setRecommendedItems(filtered)
+  }, [selectedCategory])
+
+  const calculateProtectionFee = (price) => {
+    const fee = Math.round((price * 0.05 + 2.5) * 100) / 100 // 5% + 2.5 AED
+    return price + fee
+  }
+
+  const formatPrice = (price) => {
+    return `€${price.toFixed(2)}`
+  }
+
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary/10 via-background to-secondary/10 py-20">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="flex items-center justify-center mb-6">
-              <Sparkles className="w-8 h-8 text-primary mr-2" />
-              <Badge variant="secondary" className="text-sm px-3 py-1">
-                {t('home.newInUAE')}
-              </Badge>
-            </div>
-            
-            <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-              {t('home.heroTitle1')}
-              <span className="text-primary block">{t('home.heroTitle2')}</span>
-              {t('home.heroTitle3')}
-            </h1>
-            
-            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              {t('home.heroDescription')}
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" asChild className="btn-primary">
-                <Link to="/items">
-                  {t('home.startShopping')}
-                  <ArrowRight className={`w-4 h-4 ${isRTL ? 'mr-2' : 'ml-2'}`} />
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild className="btn-outline">
-                <Link to="/sell">
-                  {t('home.startSelling')}
-                </Link>
-              </Button>
-            </div>
-          </div>
+    <div className="min-h-screen bg-gray-900 text-white">
+      {/* Search Header */}
+      <div className="sticky top-0 z-50 bg-gray-900 px-4 pt-4 pb-2">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <input
+            type="text"
+            placeholder={isRTL ? "البحث عن العناصر أو الأعضاء" : "Search for items or members"}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-gray-800 text-white rounded-full py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+          />
         </div>
-      </section>
+      </div>
 
-      {/* Features Section */}
-      <section className="py-16 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {features.map((feature, index) => {
-              const Icon = feature.icon
-              return (
-                <div key={index} className="text-center">
-                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Icon className="w-8 h-8 text-primary" />
+      {/* Category Filters */}
+      <div className="px-4 py-3">
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+          {categories.map((category) => (
+            <button
+              key={category.id}
+              onClick={() => setSelectedCategory(category.id)}
+              className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                selectedCategory === category.id
+                  ? 'bg-teal-500 text-white'
+                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+              }`}
+            >
+              {isRTL ? category.nameAr : category.name}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Recommended Section */}
+      <div className="px-4">
+        <h2 className="text-xl font-semibold mb-4">
+          {isRTL ? "موصى لك" : "Recommended for you"}
+        </h2>
+
+        {/* Items Grid */}
+        <div className="grid grid-cols-2 gap-3 pb-20">
+          {recommendedItems.map((item) => (
+            <Link
+              key={item.id}
+              to={`/items/${item.id}`}
+              className="block group"
+            >
+              <div className="bg-gray-800 rounded-lg overflow-hidden">
+                {/* Item Image */}
+                <div className="relative aspect-square">
+                  {item.images && item.images.length > 0 ? (
+                    <img
+                      src={item.images[0].image_url}
+                      alt={item.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-700 flex items-center justify-center">
+                      <span className="text-gray-500 text-sm">No Image</span>
+                    </div>
+                  )}
+                  
+                  {/* Heart Icon with Count */}
+                  <div className="absolute top-2 right-2 bg-black bg-opacity-60 rounded-full px-2 py-1 flex items-center gap-1">
+                    <Heart className="w-3 h-3 text-white" />
+                    <span className="text-white text-xs">{item.likes || Math.floor(Math.random() * 50)}</span>
                   </div>
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
-                    {feature.title}
-                  </h3>
-                  <p className="text-muted-foreground">
-                    {feature.description}
-                  </p>
+
+                  {/* Condition Badge */}
+                  {item.condition === 'New' && (
+                    <div className="absolute top-2 left-2 bg-teal-500 text-white text-xs px-2 py-1 rounded">
+                      New
+                    </div>
+                  )}
                 </div>
-              )
-            })}
-          </div>
-        </div>
-      </section>
 
-      {/* Categories Section */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-foreground mb-4">
-              {t('home.shopByCategory')}
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              {t('home.shopByCategoryDesc')}
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {categories.map((category) => (
-              <Link
-                key={category.id}
-                to={`/items?category=${encodeURIComponent(category.name)}`}
-                className="group"
-              >
-                <Card className="card-hover cursor-pointer">
-                  <CardContent className="p-6 text-center">
-                    <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-primary/20 transition-colors">
-                      <span className="text-2xl">
-                        {category.name === 'Women' && '👗'}
-                        {category.name === 'Men' && '👔'}
-                        {category.name === 'Kids' && '🧸'}
-                        {category.name === 'Home' && '🏠'}
-                        {category.name === 'Electronics' && '📱'}
-                        {category.name === 'Sports' && '⚽'}
+                {/* Item Details */}
+                <div className="p-3">
+                  {/* Brand */}
+                  <div className="text-white font-medium text-sm mb-1">
+                    {item.brand}
+                  </div>
+                  
+                  {/* Size and Condition */}
+                  <div className="text-gray-400 text-xs mb-2">
+                    {item.size} • {item.condition}
+                  </div>
+                  
+                  {/* Pricing */}
+                  <div className="space-y-1">
+                    {/* Original Price */}
+                    <div className="text-gray-300 text-sm">
+                      {formatPrice(item.price)}
+                    </div>
+                    
+                    {/* Price with Protection (incl.) */}
+                    <div className="flex items-center gap-1">
+                      <span className="text-teal-400 font-semibold text-sm">
+                        {formatPrice(calculateProtectionFee(item.price))} incl.
                       </span>
-                    </div>
-                    <h3 className="font-medium text-foreground group-hover:text-primary transition-colors">
-                      {t(`categories.${category.name.toLowerCase()}`)}
-                    </h3>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Items Section */}
-      <section className="py-16 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-12">
-            <div>
-              <h2 className="text-3xl font-bold text-foreground mb-2">
-                {t('items.featured')}
-              </h2>
-              <p className="text-muted-foreground">
-                {t('home.featuredItemsDesc')}
-              </p>
-            </div>
-            <Button variant="outline" asChild>
-              <Link to="/items">
-                {t('home.viewAll')}
-                <ArrowRight className={`w-4 h-4 ${isRTL ? 'mr-2' : 'ml-2'}`} />
-              </Link>
-            </Button>
-          </div>
-          
-          {loading ? (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {[...Array(8)].map((_, index) => (
-                <Card key={index} className="overflow-hidden">
-                  <div className="aspect-product loading-pulse" />
-                  <CardContent className="p-4">
-                    <div className="h-4 loading-pulse mb-2" />
-                    <div className="h-4 loading-pulse w-2/3 mb-2" />
-                    <div className="h-4 loading-pulse w-1/2" />
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {featuredItems.map((item) => (
-                <Link key={item.id} to={`/items/${item.id}`} className="group">
-                  <Card className="card-hover overflow-hidden">
-                    <div className="aspect-product bg-muted relative overflow-hidden">
-                      {item.images && item.images.length > 0 ? (
-                        <img
-                          src={item.images[0].image_url}
-                          alt={item.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-muted flex items-center justify-center">
-                          <span className="text-muted-foreground">No Image</span>
-                        </div>
-                      )}
-                      {item.condition === 'New' && (
-                        <Badge className="absolute top-2 left-2 bg-accent text-accent-foreground">
-                          New
-                        </Badge>
-                      )}
-                    </div>
-                    <CardContent className="p-4">
-                      <h3 className="font-medium text-foreground text-truncate-2 mb-1 group-hover:text-primary transition-colors">
-                        {item.title}
-                      </h3>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        {item.brand} • {item.size}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-lg font-bold text-primary">
-                          {item.price} {t('common.aed')}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {item.seller?.location}
-                        </span>
+                      <div className="w-3 h-3 bg-teal-500 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs">✓</span>
                       </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
-            </div>
-          )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          ))}
         </div>
-      </section>
+      </div>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-primary text-primary-foreground">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            {t('home.readyToStart')}
-          </h2>
-          <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-            {t('home.readyToStartDesc')}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" variant="secondary">
-              <Link to="/register">
-                {t('home.joinToday')}
-              </Link>
-            </Button>
-            <Button size="lg" variant="outline" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
-              <Link to="/items">
-                {t('home.browseItems')}
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </section>
+      {/* Bottom spacing for mobile navigation */}
+      <div className="h-20"></div>
     </div>
   )
 }
