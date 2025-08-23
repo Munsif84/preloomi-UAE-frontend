@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true)
 
   // API base URL
-  const API_BASE = 'https://preloomi-uae-backend-production.up.railway.app/api'
+  const API_BASE = 'https://preloomi-uae-backend.onrender.com/api'
 
   useEffect(() => {
     // Check for stored token on app load
